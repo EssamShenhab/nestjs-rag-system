@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // import { CreateDocumentDto } from './dto/create-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
+import { UploadDocumentDto } from './dto/upload-document.dto';
 
 @Injectable()
 export class DocumentsService {
@@ -19,7 +19,7 @@ export class DocumentsService {
     return `This action returns a #${id} document`;
   }
 
-  update(id: number, updateDocumentDto: UpdateDocumentDto) {
+  update(id: number, updateDocumentDto: UploadDocumentDto) {
     return `This action updates a #${id} document`;
   }
 
