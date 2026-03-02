@@ -35,12 +35,15 @@ import * as fs from 'fs';
         },
 
         filename: (req, file, cb) => {
-          const randomName = Array(32)
+          const randomName = Array(16)
             .fill(null)
             .map(() => Math.floor(Math.random() * 16).toString(16))
             .join('');
 
-          cb(null, `${randomName}${extname(file.originalname)}`);
+          cb(
+            null,
+            `${randomName}'_'${file.originalname}${extname(file.originalname)}`,
+          );
         },
       }),
     }),
