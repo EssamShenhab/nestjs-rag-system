@@ -8,34 +8,23 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  MaxFileSizeValidator,
-  FileTypeValidator,
-  ParseFilePipe,
-  HttpStatus,
-  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
-import { UploadDocumentDto } from './dto/upload-document.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/config/config.interface';
 import { UploadFileValidationPipe } from './pipes/upload-file-validation.pipe';
 
 @ApiTags('api_v1')
 @Controller('api/v1')
 export class DocumentsController {
-  constructor(
-    private readonly documentsService: DocumentsService,
-    private readonly configService: ConfigService<AppConfig>,
-  ) {}
+  constructor(private readonly documentsService: DocumentsService) {}
 
   @Post('upload/:project_id')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @Param('project_id') project_id: string,
-    @Body() body: UploadDocumentDto,
-    @UploadedFile(UploadFileValidationPipe) file: Express.Multer.File) {
+    @UploadedFile(UploadFileValidationPipe) file: Express.Multer.File,
+  ) {
     return this.documentsService.uploadFile(file, project_id);
   }
 
