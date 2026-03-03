@@ -3,9 +3,9 @@ import { ProjectService } from 'src/project/project.service';
 import { join, extname } from 'path';
 import { TextLoader } from '@langchain/classic/document_loaders/fs/text';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { Document } from '@langchain/core/documents';
-
+import { ProcessingEnum, ResponseSignal } from 'src/models/enums';
 
 @Injectable()
 export class ProcessService {
@@ -20,28 +20,29 @@ export class ProcessService {
     const filePath = join(projectPath, file_id);
     const fileExtension = this.getFileExtension(file_id);
 
-    if (fileExtension === '.pdf') {
+    if (fileExtension === ProcessingEnum.PDF) {
       return new PDFLoader(filePath);
     }
 
-    if (fileExtension === '.txt') {
+    if (fileExtension === ProcessingEnum.TXT) {
       return new TextLoader(filePath);
     }
 
     throw new BadRequestException({
-      signal: 'UNSUPPORTED_FILE_TYPE',
+      signal: ResponseSignal.FILE_TYPE_NOT_SUPPORTED,
     });
   }
 
-  async getFileContent(
-    project_id: string,
-    file_id: string,
-  ) {
+  async getFileContent(project_id: string, file_id: string) {
     const loader = await this.getFileLoader(project_id, file_id);
     return loader.load();
   }
 
-  async processFileContent(file_content: Document[], chunk_size:number = 100, chunk_overlap:number = 20){
+  async processFileContent(
+    file_content: Document[],
+    chunk_size: number = 100,
+    chunk_overlap: number = 20,
+  ) {
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: chunk_size,
       chunkOverlap: chunk_overlap,
@@ -51,5 +52,4 @@ export class ProcessService {
 
     return chunks;
   }
-
 }
