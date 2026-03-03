@@ -5,6 +5,8 @@ import { DocumentsModule } from './documents/documents.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/app.config';
 import { validationSchema } from './config/validation';
+import { ProcessModule } from './process/process.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { validationSchema } from './config/validation';
       validationSchema,
       load: [configuration],
     }),
+    ProcessModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

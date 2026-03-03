@@ -14,8 +14,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadFileValidationPipe } from './pipes/upload-file-validation.pipe';
 
-@ApiTags('api_v1')
-@Controller('api/v1')
+@ApiTags('api_v1', 'data')
+@Controller('api/v1/data')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 

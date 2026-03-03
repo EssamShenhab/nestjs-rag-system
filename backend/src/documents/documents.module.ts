@@ -40,10 +40,7 @@ import * as fs from 'fs';
             .map(() => Math.floor(Math.random() * 16).toString(16))
             .join('');
 
-          cb(
-            null,
-            `${randomName}'_'${file.originalname}${extname(file.originalname)}`,
-          );
+          cb(null, `${randomName}_${file.originalname}`);
         },
       }),
     }),
