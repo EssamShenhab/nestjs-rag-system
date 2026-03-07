@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ProcessService } from './process.service';
 import { ProcessController } from './process.controller';
-import { ProjectService } from 'src/project/project.service';
 import { ProjectModule } from 'src/project/project.module';
+import { ChunkModule } from 'src/chunk/chunk.module';
+import { AssetModule } from 'src/asset/asset.module';
 
 @Module({
-  imports: [ProjectModule],
+  imports: [ProjectModule, ChunkModule, AssetModule],
   controllers: [ProcessController],
-  providers: [ProcessService, ProjectService],
+  providers: [ProcessService],
 })
 export class ProcessModule {}

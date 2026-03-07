@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { ProcessService } from './process.service';
 import { ProcessRequestDto } from './dto/process-request.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseSignal } from 'src/models/enums';
+import { ParseIntPipe } from '@nestjs/common';
 
 @ApiTags('api_v1', 'data')
 @Controller('api/v1/data')
@@ -19,29 +11,22 @@ export class ProcessController {
   constructor(private readonly processService: ProcessService) {}
 
   @Post('process/:project_id')
-  async process_endpoint(
-    @Param('project_id') project_id: string,
-    @Body() processRequestDto: ProcessRequestDto,
+  async processEndpoint(
+    @Param('project_id', ParseIntPipe) project_id: number,
+    @Body() dto: ProcessRequestDto,
   ) {
-    const { file_id, chunk_size, overlap_size } = processRequestDto;
+    const { file_id, chunk_size, overlap_size } = dto;
 
-    const fileContent = await this.processService.getFileContent(
+    const chunks = await this.processService.processFile(
       project_id,
       file_id,
-    );
-
-    const fileChunks = await this.processService.processFileContent(
-      fileContent,
       chunk_size,
       overlap_size,
     );
 
-    if (!fileChunks || fileChunks.length === 0) {
-      throw new BadRequestException({
-        signal: ResponseSignal.PROCESSING_FAILED,
-      });
-    }
-
-    return fileChunks;
+    return {
+      signal: ResponseSignal.PROCESSING_SUCCESS,
+      inserted_chunks: chunks,
+    };
   }
 }
