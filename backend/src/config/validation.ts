@@ -17,4 +17,10 @@ export const validationSchema = Joi.object({
   FILE_MAX_SIZE: Joi.number().required(),
 
   FILE_DEFAULT_CHUNK_SIZE: Joi.number().required(),
+
+  DB_HOST: Joi.string().required(),
+  DB_PORT: Joi.number().required(),
+  DB_USERNAME: Joi.string().required(),
+  DB_PASSWORD: Joi.string().required(),
+  DB_NAME: Joi.string().required(),
 });
