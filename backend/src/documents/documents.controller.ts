@@ -1,18 +1,15 @@
 import {
   Controller,
-  Get,
   Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
   UseInterceptors,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadFileValidationPipe } from './pipes/upload-file-validation.pipe';
+import { ParseIntPipe } from '@nestjs/common';
 
 @ApiTags('api_v1', 'data')
 @Controller('api/v1/data')
@@ -22,32 +19,9 @@ export class DocumentsController {
   @Post('upload/:project_id')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
-    @Param('project_id') project_id: string,
+    @Param('project_id', ParseIntPipe) project_id: number,
     @UploadedFile(UploadFileValidationPipe) file: Express.Multer.File,
   ) {
-    return this.documentsService.uploadFile(file, project_id);
+    return this.documentsService.ingestDocument(file, project_id);
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.documentsService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.documentsService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateDocumentDto: UploadDocumentDto,
-  // ) {
-  //   return this.documentsService.update(+id, updateDocumentDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.documentsService.remove(+id);
-  // }
 }

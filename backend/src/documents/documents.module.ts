@@ -3,21 +3,26 @@ import { DocumentsService } from './documents.service';
 import { DocumentsController } from './documents.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { join } from 'path';
 import * as fs from 'fs';
+import { randomUUID } from 'crypto';
+import { ProjectModule } from 'src/project/project.module';
+import { AssetModule } from 'src/asset/asset.module';
 
 @Module({
   imports: [
+    ProjectModule,
+    AssetModule,
     MulterModule.register({
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const rawProjectId = req.params?.project_id;
+          const rawproject_id = req.params?.project_id;
 
-          const projectId = Array.isArray(rawProjectId)
-            ? rawProjectId[0]
-            : rawProjectId;
+          const project_id = Array.isArray(rawproject_id)
+            ? rawproject_id[0]
+            : rawproject_id;
 
-          if (!projectId || !/^[a-zA-Z0-9_-]+$/.test(projectId)) {
+          if (!project_id || !/^[a-zA-Z0-9_-]+$/.test(project_id)) {
             return cb(new Error('Invalid project_id'), '');
           }
 
@@ -26,7 +31,7 @@ import * as fs from 'fs';
             'src',
             'assets',
             'files',
-            projectId,
+            project_id,
           );
 
           fs.mkdirSync(uploadPath, { recursive: true });
@@ -35,12 +40,14 @@ import * as fs from 'fs';
         },
 
         filename: (req, file, cb) => {
-          const randomName = Array(16)
-            .fill(null)
-            .map(() => Math.floor(Math.random() * 16).toString(16))
-            .join('');
+          const id = randomUUID();
 
-          cb(null, `${randomName}_${file.originalname}`);
+          const cleanedFileName = file.originalname
+            .trim()
+            .replace(/[^\w.]/g, '')
+            .replace(/ /g, '_');
+
+          cb(null, `${id}_${cleanedFileName}`);
         },
       }),
     }),
