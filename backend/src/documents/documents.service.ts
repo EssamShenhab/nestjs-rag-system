@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
-import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
 import { ProjectService } from 'src/project/project.service';
 import { AssetsService } from 'src/asset/asset.service';
@@ -11,7 +10,6 @@ import { AssetTypeEnum } from 'src/models/enums/asset-type.enum';
 export class DocumentsService {
   protected baseDir: string;
   protected filesDir: string;
-  protected databaseDir: string;
 
   constructor(
     private readonly projectService: ProjectService,
@@ -20,8 +18,6 @@ export class DocumentsService {
     this.baseDir = process.cwd();
 
     this.filesDir = path.join(this.baseDir, 'src', 'assets', 'files');
-
-    this.databaseDir = path.join(this.baseDir, 'src', 'assets', 'database');
   }
 
   uploadFile(file: Express.Multer.File, project_id: string) {
@@ -29,14 +25,6 @@ export class DocumentsService {
       project_id,
       file_id: file.filename,
     };
-  }
-
-  async getDatabasePath(dbName: string): Promise<string> {
-    const databasePath = path.join(this.databaseDir, dbName);
-
-    await fs.mkdir(databasePath, { recursive: true });
-
-    return databasePath;
   }
 
   async generateUniqueFilepath(

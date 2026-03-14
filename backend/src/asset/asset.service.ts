@@ -38,12 +38,4 @@ export class AssetsService {
       },
     });
   }
-  
-  async getAssetByUuid(asset_uuid: string): Promise<Asset | null> {
-    return this.assetRepo.findOne({
-      where: {
-        asset_uuid: asset_uuid,
-      },
-    });
-  }
 }
