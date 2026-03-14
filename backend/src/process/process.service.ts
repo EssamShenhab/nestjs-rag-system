@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ProjectService } from 'src/project/project.service';
 import { join, extname } from 'path';
 import { TextLoader } from '@langchain/classic/document_loaders/fs/text';
@@ -8,13 +8,17 @@ import { Document } from '@langchain/core/documents';
 import { ProcessingEnum, ResponseSignal } from 'src/models/enums';
 import { ChunkService } from 'src/chunk/chunk.service';
 import { AssetsService } from 'src/asset/asset.service';
+import { NlpService } from 'src/nlp/nlp.service';
+import { AssetTypeEnum } from 'src/models/enums/asset-type.enum';
 
 @Injectable()
 export class ProcessService {
+  private readonly logger = new Logger(ProcessService.name);
   constructor(
     private readonly projectService: ProjectService,
     private readonly chunkService: ChunkService,
     private readonly assetsService: AssetsService,
+    private readonly nlpService: NlpService,
   ) {}
 
   private getFileExtension(file_id: string) {
@@ -67,60 +71,100 @@ export class ProcessService {
       chunkOverlap: chunk_overlap,
     });
 
-    const chunks = await textSplitter.splitDocuments(file_content);
-
-    return chunks;
+    return textSplitter.splitDocuments(file_content);
   }
 
-  async processFile(
+  async processFiles(
     project_id: number,
-    asset_uuid: string,
     chunk_size = 100,
     chunk_overlap = 20,
-  ) {
+    do_reset = 0,
+    file_id?: string,
+  ): Promise<{ inserted_chunks: number; processed_files: number }> {
     const project = await this.projectService.getProjectOrCreateOne(project_id);
-
     if (!project) {
       throw new BadRequestException({
         signal: ResponseSignal.PROJECT_NOT_FOUND_ERROR,
       });
     }
 
-    const asset = await this.assetsService.getAssetByUuid(asset_uuid);
-
-    if (!asset) {
-      throw new BadRequestException({
-        signal: ResponseSignal.NO_FILES_ERROR,
-      });
+    if (do_reset === 1) {
+      await this.nlpService.resetVectorDbCollection(project);
+      await this.chunkService.deleteChunksByProjectId(project.project_id);
     }
 
-    const docs = await this.getFileContent(
-      project_id.toString(),
-      asset.asset_name,
-    );
+    let assetsToProcess: { asset_id: number; asset_name: string }[];
 
-    const chunks = await this.processFileContent(
-      docs,
-      chunk_size,
-      chunk_overlap,
-    );
-
-    if (!chunks.length) {
-      throw new BadRequestException({
-        signal: ResponseSignal.PROCESSING_FAILED,
-      });
+    if (file_id) {
+      const asset = await this.assetsService.getAssetRecord(
+        project_id.toString(),
+        file_id,
+      );
+      if (!asset) {
+        throw new BadRequestException({ signal: ResponseSignal.FILE_ID_ERROR });
+      }
+      assetsToProcess = [
+        { asset_id: asset.asset_id, asset_name: asset.asset_name },
+      ];
+    } else {
+      const assets = await this.assetsService.getAllProjectAssets(
+        project_id.toString(),
+        AssetTypeEnum.FILE,
+      );
+      if (!assets || assets.length === 0) {
+        throw new BadRequestException({
+          signal: ResponseSignal.NO_FILES_ERROR,
+        });
+      }
+      assetsToProcess = assets.map((a) => ({
+        asset_id: a.asset_id,
+        asset_name: a.asset_name,
+      }));
     }
 
-    const dbChunks = chunks.map((chunk, index) => ({
-      chunk_text: chunk.pageContent,
-      chunk_order: index,
-      chunk_project_id: project.project_id,
-      chunk_asset_id: asset.asset_id,
-      chunk_metadata: chunk.metadata ?? {},
-    }));
+    let inserted_chunks = 0;
+    let processed_files = 0;
 
-    await this.chunkService.insertManyChunks(dbChunks);
+    for (const asset of assetsToProcess) {
+      let docs: Document[];
 
-    return chunks.length;
+      try {
+        docs = await this.getFileContent(
+          project_id.toString(),
+          asset.asset_name,
+        );
+      } catch (err) {
+        this.logger.error(
+          `Error while processing file: ${asset.asset_name} — ${err}`,
+        );
+        continue;
+      }
+
+      const chunks = await this.processFileContent(
+        docs,
+        chunk_size,
+        chunk_overlap,
+      );
+
+      if (!chunks.length) {
+        throw new BadRequestException({
+          signal: ResponseSignal.PROCESSING_FAILED,
+        });
+      }
+
+      const dbChunks = chunks.map((chunk, index) => ({
+        chunk_text: chunk.pageContent,
+        chunk_order: index + 1,
+        chunk_project_id: project.project_id,
+        chunk_asset_id: asset.asset_id,
+        chunk_metadata: chunk.metadata ?? {},
+      }));
+
+      await this.chunkService.insertManyChunks(dbChunks);
+      inserted_chunks += chunks.length;
+      processed_files += 1;
+    }
+
+    return { inserted_chunks, processed_files };
   }
 }

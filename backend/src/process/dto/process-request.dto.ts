@@ -2,8 +2,9 @@ import { IsString, IsInt, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ProcessRequestDto {
+  @IsOptional()
   @IsString()
-  file_id: string;
+  file_id?: string;
 
   @IsOptional()
   @Type(() => Number)
