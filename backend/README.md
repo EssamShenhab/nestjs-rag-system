@@ -1,4 +1,3 @@
-```markdown
 # NestJS RAG System
 
 A NestJS implementation of a RAG (Retrieval-Augmented Generation) system for document processing, semantic search, and AI-powered question answering.
