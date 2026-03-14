@@ -38,7 +38,7 @@
               "key": "file",
               "type": "file",
               "uuid": "1cbce48d-6d46-4e9d-9fed-d6fd0d5cd40e",
-              "src": "/home/essam/Desktop/Lebanon.txt"
+              "src": "/home/essam/Desktop/jay_leno.pdf"
             }
           ]
         },
@@ -65,7 +65,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"file_id\": \"516ef8c89f9e3926_Lebanon.txt\",\n    \"chunk_size\": 200,\n    \"overlap_size\": 20,\n    \"do_reset\": 1\n}",
+          "raw": "{\n    // \"file_id\": \"7\",\n    \"chunk_size\": 200,\n    \"overlap_size\": 20,\n    \"do_reset\": 1\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -84,6 +84,119 @@
             "process",
             "1"
           ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "nlp_index_push",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"do_reset\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api}}/api/v1/nlp/index/push/1",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "nlp",
+            "index",
+            "push",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "nlp_index_info",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"text\": \"When was Jay Leno was born?\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api}}/api/v1/nlp/index/info/1",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "nlp",
+            "index",
+            "info",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "nlp_index_search",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"text\": \"When was Jay Leno was born?\",\n    \"limit\": 5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{api}}/api/v1/nlp/index/search/1",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "nlp",
+            "index",
+            "search",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "nlp-rag-answer",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"text\": \"When was Jay Leno was born?\",\n    \"limit\": 5\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         }
       },
       "response": []
