@@ -10,7 +10,9 @@ import { ProjectModule } from './project/project.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChunkModule } from './chunk/chunk.module';
 import { AssetModule } from './asset/asset.module';
-import { VectordbModule } from './stores/vectordb/vectordb.module';
+import { VectorDBModule } from './stores/vectordb/vectordb.module';
+import { NlpModule } from './nlp/nlp.module';
+import { TemplateModule } from './stores/prompts/templates/template-parser.module'; 
 
 @Module({
   imports: [
@@ -40,7 +42,9 @@ import { VectordbModule } from './stores/vectordb/vectordb.module';
     ProcessModule,
     ChunkModule,
     AssetModule,
-    VectordbModule,
+    VectorDBModule,
+    NlpModule,
+    TemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
