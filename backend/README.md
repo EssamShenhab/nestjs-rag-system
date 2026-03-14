@@ -36,6 +36,22 @@ cd docker && docker compose up -d
 npm run start:dev
 ```
 
+## Database Migrations
+
+TypeORM migrations are used to version-control the database schema.
+```bash
+# Generate a migration after entity changes
+npm run migration:generate src/migrations/MigrationName
+
+# Run pending migrations
+npm run migration:run
+
+# Revert last migration
+npm run migration:revert
+```
+
+> Never use `synchronize: true` in production — always use migrations instead.
+
 ## API Endpoints
 
 | Method | Endpoint | Description |

@@ -33,7 +33,7 @@ import { TemplateModule } from './stores/prompts/templates/template-parser.modul
         password: config.get<string>('db.password'),
         database: config.get<string>('db.database'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
       }),
     }),
 
