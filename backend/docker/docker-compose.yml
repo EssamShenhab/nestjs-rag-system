@@ -3,7 +3,7 @@ services:
     image: mysql:8.0.45-debian
     container_name: mysql
     ports:
-      - '${DB_PORT}:3306'
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     environment:
