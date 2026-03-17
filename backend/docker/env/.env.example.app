@@ -1,0 +1,40 @@
+APP_NAME=simple-RAG
+APP_VERSION=0.1
+
+FILE_ALLOWED_TYPES=["text/plain", "application/pdf"]
+FILE_MAX_SIZE=10
+FILE_DEFAULT_CHUNK_SIZE=512000 # 512KB
+
+DB_HOST=localhost
+DB_USERNAME=root
+DB_PASSWORD=*****
+DB_NAME=nestjs-rag-system
+
+# ========================= LLM Config =========================
+GENERATION_BACKEND="OPENAI"
+EMBEDDING_BACKEND="COHERE"
+
+OPENAI_API_KEY="sk-"
+COHERE_API_KEY=""
+JINA_AI_API_KEY=""
+OPENAI_API_URL=
+
+
+GENERATION_MODEL_ID_LITERAL=["gpt-4o-mini", "gpt-4o"]
+GENERATION_MODEL_ID="gpt-4o-mini"
+EMBEDDING_MODEL_ID="embed-multilingual-light-v3.0"
+EMBEDDING_MODEL_SIZE=384
+
+INPUT_DEFAULT_MAX_CHARACTERS=1024
+GENERATION_DEFAULT_MAX_TOKENS=200
+GENERATION_DEFAULT_TEMPERATURE=0.1
+
+# ========================= Vector DB Config =========================
+VECTOR_DB_BACKEND_LITERAL=["QDRANT"]
+VECTOR_DB_BACKEND="QDRANT"
+VECTOR_DB_PATH="qdrant_db"
+VECTOR_DB_DISTANCE_METHOD="cosine"
+
+# ========================= Template Configs =========================
+PRIMARY_LANG="en"
+DEFAULT_LANG="en"
