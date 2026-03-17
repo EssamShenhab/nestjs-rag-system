@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DocumentsModule } from './documents/documents.module';
@@ -12,7 +12,9 @@ import { ChunkModule } from './chunk/chunk.module';
 import { AssetModule } from './asset/asset.module';
 import { VectorDBModule } from './stores/vectordb/vectordb.module';
 import { NlpModule } from './nlp/nlp.module';
-import { TemplateModule } from './stores/prompts/templates/template-parser.module'; 
+import { TemplateModule } from './stores/prompts/templates/template-parser.module';
+import { MetricsModule } from './utils/metrics/metrics.module';
+import { PrometheusMiddleware } from './utils/metrics/metrics.middleware';
 
 @Module({
   imports: [
@@ -45,8 +47,13 @@ import { TemplateModule } from './stores/prompts/templates/template-parser.modul
     VectorDBModule,
     NlpModule,
     TemplateModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PrometheusMiddleware).forRoutes('*');
+  }
+}
