@@ -110,7 +110,7 @@ NestJS exposes Prometheus metrics at `/metrics` using `@willsoto/nestjs-promethe
 |-----------|-----|
 | Node Exporter | https://grafana.com/grafana/dashboards/1860 |
 | MySQL | https://grafana.com/grafana/dashboards/7362 |
-| Qdrant | https://grafana.com/grafana/dashboards/23033 |
+| Qdrant | https://grafana.com/grafana/dashboards/24603-qdrant-prometheus-metrics-only-by-divakar-r |
 
 ## Troubleshooting
 
