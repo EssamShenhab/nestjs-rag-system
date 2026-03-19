@@ -64,6 +64,8 @@ npm run migration:revert
 | POST | `/api/v1/nlp/index/search/:project_id` | Semantic search |
 | POST | `/api/v1/nlp/index/answer/:project_id` | RAG question answering |
 
+- 📥 [Postman Collection](./src/assets/simple-rag.postman_collection.json)
+
 ## RAG Pipeline
 
 ```
