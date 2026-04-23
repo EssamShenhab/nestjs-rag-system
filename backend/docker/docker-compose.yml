@@ -17,6 +17,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - ./env/.env.app
 
@@ -138,6 +140,33 @@ services:
       - backend
     restart: unless-stopped
 
+  # Redis (Results Backend & Cache)
+  redis:
+    image: redis:8.0.6-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    env_file:
+      - ./env/.env.redis
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    command:
+      [
+        'redis-server',
+        '--appendonly',
+        'yes',
+        '--requirepass',
+        '${REDIS_PASSWORD:-minirag_redis_2222}',
+      ]
+
 networks:
   backend:
     driver: bridge
@@ -148,3 +177,4 @@ volumes:
   qdrant_data:
   prometheus_data:
   grafana_data:
+  redis_data:

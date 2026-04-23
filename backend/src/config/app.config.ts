@@ -72,4 +72,14 @@ export default (): AppConfig => ({
     PRIMARY_LANG: process.env.PRIMARY_LANG!,
     DEFAULT_LANG: process.env.DEFAULT_LANG!,
   },
+
+  bullmq: {
+    BULLMQ_HOST: process.env.BULLMQ_HOST!,
+    BULLMQ_PORT: parseInt(process.env.BULLMQ_PORT!, 10),
+    BULLMQ_PASSWORD: process.env.BULLMQ_PASSWORD!,
+    BULLMQ_TASK_TIME_LIMIT: parseInt(process.env.BULLMQ_TASK_TIME_LIMIT!, 10),
+    BULLMQ_CONCURRENCY: parseInt(process.env.BULLMQ_CONCURRENCY!, 10),
+    BULLMQ_TASK_REMOVE_ON_COMPLETE: process.env.BULLMQ_TASK_REMOVE_ON_COMPLETE!,
+    BULLMQ_TASK_REMOVE_ON_FAIL: process.env.BULLMQ_TASK_REMOVE_ON_FAIL!,
+  },
 });

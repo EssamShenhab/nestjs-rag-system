@@ -50,4 +50,14 @@ export interface AppConfig {
     PRIMARY_LANG: string;
     DEFAULT_LANG: string;
   };
+
+  bullmq: {
+    BULLMQ_HOST: string;
+    BULLMQ_PORT: number;
+    BULLMQ_PASSWORD: string;
+    BULLMQ_TASK_TIME_LIMIT: number;
+    BULLMQ_CONCURRENCY: number;
+    BULLMQ_TASK_REMOVE_ON_COMPLETE: any;
+    BULLMQ_TASK_REMOVE_ON_FAIL: any;
+  },
 }
