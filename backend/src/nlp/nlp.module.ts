@@ -6,9 +6,16 @@ import { LlmModule } from 'src/stores/llm/llm.module';
 import { TemplateModule } from 'src/stores/prompts/templates/template-parser.module';
 import { ProjectModule } from 'src/project/project.module';
 import { ChunkModule } from 'src/chunk/chunk.module';
-
+import { BullModule } from '@nestjs/bullmq';
 @Module({
-  imports: [VectorDBModule, LlmModule, TemplateModule, ProjectModule, ChunkModule],
+  imports: [
+    VectorDBModule,
+    LlmModule,
+    TemplateModule,
+    ProjectModule,
+    ChunkModule,
+    BullModule.registerQueue({ name: 'tasks.data_indexing.index_data_content' }),
+  ],
   controllers: [NlpController],
   providers: [NlpService],
   exports: [NlpService],

@@ -15,6 +15,10 @@ import { NlpModule } from './nlp/nlp.module';
 import { TemplateModule } from './stores/prompts/templates/template-parser.module';
 import { MetricsModule } from './utils/metrics/metrics.module';
 import { PrometheusMiddleware } from './utils/metrics/metrics.middleware';
+import { BullModule } from '@nestjs/bullmq';
+import { FileProcessingModule } from './tasks/file-processing/file-processing.module';
+import { DataIndexingModule } from './tasks/data-indexing/data-indexing.module';
+import { FlowModule } from './flow/flow.module';
 
 @Module({
   imports: [
@@ -39,6 +43,31 @@ import { PrometheusMiddleware } from './utils/metrics/metrics.middleware';
       }),
     }),
 
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        connection: {
+          host: config.get<string>('bullmq.BULLMQ_HOST'),
+          port: config.get<number>('bullmq.BULLMQ_PORT'),
+          password: config.get<string>('bullmq.BULLMQ_PASSWORD'),
+        },
+        defaultJobOptions: {
+          attempts: 3,
+          removeOnComplete: config.get('bullmq.BULLMQ_TASK_REMOVE_ON_COMPLETE'),
+          removeOnFail: config.get('bullmq.BULLMQ_TASK_REMOVE_ON_FAIL'),
+          backoff: {
+            type: 'fixed',
+            delay: 1000,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
+
+    BullModule.registerQueue({
+      name: 'video',
+    }),
+
     ProjectModule,
     DocumentsModule,
     ProcessModule,
@@ -48,6 +77,9 @@ import { PrometheusMiddleware } from './utils/metrics/metrics.middleware';
     NlpModule,
     TemplateModule,
     MetricsModule,
+    FileProcessingModule,
+    DataIndexingModule,
+    FlowModule,
   ],
   controllers: [AppController],
   providers: [AppService],
