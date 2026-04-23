@@ -70,8 +70,10 @@ export class QdrantProvider implements VectorDBInterface {
     try {
       await this.client.getCollection(collection_name);
       return true;
-    } catch {
-      return false;
+    } catch (err: any) {
+      if (err?.status === 404 || err?.message?.includes('Not found'))
+        return false;
+      throw err;
     }
   }
 
@@ -126,6 +128,12 @@ export class QdrantProvider implements VectorDBInterface {
         vectors: {
           size: embedding_size,
           distance: this.distance_method as Schemas['Distance'],
+        },
+        quantization_config: {
+          scalar: {
+            type: 'int8',
+            always_ram: true,
+          },
         },
       });
 
@@ -189,7 +197,7 @@ export class QdrantProvider implements VectorDBInterface {
     }
 
     if (!record_ids) {
-      record_ids = texts.map((_, i) => i);
+      record_ids = texts.map((_, i) => Date.now() + i);
     }
 
     for (let i = 0; i < texts.length; i += batch_size) {
@@ -227,6 +235,10 @@ export class QdrantProvider implements VectorDBInterface {
 
     const results = await this.client.search(collection_name, {
       vector,
+      params: {
+        hnsw_ef: 128,
+        exact: false,
+      },
       limit,
       with_payload: true,
     });
